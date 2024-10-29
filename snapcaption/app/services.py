@@ -2,14 +2,28 @@ from azure.cognitiveservices.vision.computervision import ComputerVisionClient
 from msrest.authentication import CognitiveServicesCredentials
 from azure.storage.blob import BlobServiceClient
 import os
+from fastapi import UploadFile
+import aiofiles
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Initialize the Azure clients with environment variables
 cognitive_client = ComputerVisionClient(
-    endpoint=os.getenv("AZURE_ENDPOINT"),
-    credentials=CognitiveServicesCredentials(os.getenv("AZURE_KEY"))
+    endpoint=os.getenv("COMPUTER_VISION_CONNECTION_STRING"),
+    credentials=CognitiveServicesCredentials(os.getenv("COMPUTER_VISION_KEY"))
 )
 
-blob_service_client = BlobServiceClient.from_connection_string(os.getenv("BLOB_CONNECTION_STRING"))
+blob_service_client = BlobServiceClient.from_connection_string(os.getenv("BLOB_STORAGE_CONNECTION_STRING"))
+
+#Allow user to upload an image
+async def upload_image_service(image: UploadFile):
+    image_url = await store_image_in_blob(image)
+    image_id = image.filename
+    caption = await process_image_service(image_id)
+    
+    return {"image_url": image_url, "caption": caption}
+
 
 # Process the image and return caption
 async def process_image_service(image_id: str):
@@ -33,4 +47,5 @@ async def store_image_in_blob(image: UploadFile):
     with open(image.filename, "rb") as data:
         blob_client.upload_blob(data)
     
-    return f"https://your-storage-account.blob.core.windows.net/images/{image.filename}"
+    #change the return value to the image URL 
+    return f"https://snapcstorage.blob.core.windows.net/{os.getenv("BLOB_CONTAINER")}/{image.filename}"
