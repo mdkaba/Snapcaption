@@ -1,5 +1,5 @@
 # Byte-compiled / optimized / DLL files
-snapcaption/app/__pycache__/
+app/__pycache__/
 *.py[cod]
 *$py.class
 
@@ -122,13 +122,13 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-snapcaption/.env
-snapcaption/.venv
-snapcaption/env/
-snapcaption/venv/
-snapcaption/ENV/
-snapcaption/env.bak/
-snapcaption/venv.bak/
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
 
 # Spyder project settings
 .spyderproject
