@@ -4,8 +4,8 @@ import { SparklesCore } from "@/components/ui/sparkles";
 
 export function TitleSparkle() {
   return (
-    <div className="sm:h-[30rem] h-[15rem] w-full dark:bg-zinc-900 bg-zinc-200 flex flex-col items-center justify-center overflow-hidden rounded-md">
-      <h1 className="md:text-6xl text-4xl lg:text-9xl font-bold text-center dark:text-zinc-200 text-zinc-900 relative uppercase z-20 font-[family-name:var(--font-roboto-condensed-italic)]">
+    <div className="sm:h-[30rem] h-[15rem] w-full dark:bg-zinc-900 bg-zinc-200 flex flex-col items-center sm:pt-20 pt-7 overflow-hidden rounded-md">
+      <h1 className="md:text-6xl text-5xl lg:text-9xl font-bold text-center dark:text-zinc-200 text-zinc-900 relative uppercase z-20 font-[family-name:var(--font-roboto-condensed-italic)]">
         SnapCaption
       </h1>
       <div className="sm:w-[60rem] w-[40rem] sm:h-40 h-[5rem] relative">
