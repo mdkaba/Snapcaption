@@ -22,6 +22,16 @@ const robotoCondensed = localFont({
   variable: "--font-roboto-condensed-regular",
   weight: "100 900",
 });
+const libreBaskerville = localFont({
+  src: "./fonts/LibreBaskerville.ttf",
+  variable: "--font-libre-baskerville",
+  weight: "400",
+});
+const libreBaskervilleBold = localFont({
+  src: "./fonts/LibreBaskerville-Bold.ttf",
+  variable: "--font-libre-baskerville-b",
+  weight: "700",
+});
 
 export const metadata: Metadata = {
   title: "SnapCaption",
@@ -36,7 +46,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${robotoCondensedItalic.variable} ${robotoCondensed.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${robotoCondensedItalic.variable} ${robotoCondensed.variable} ${libreBaskerville.variable} ${libreBaskervilleBold.variable} antialiased w-screen`}
       >
         {children}
       </body>
