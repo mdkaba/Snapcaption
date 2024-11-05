@@ -18,7 +18,7 @@ export function Navbar() {
   ];
 
   return (
-    <NavigationMenu className="flex sm:gap-3 max-sm:justify-between items-center border-b border-zinc-500 h-fit p-5">
+    <NavigationMenu className="flex sm:gap-3 max-sm:justify-between items-center border-b border-zinc-500 h-fit p-5 absolute w-full">
       <h1 className="lg:mx-7 text-2xl lg:text-3xl text-center align-top dark:text-zinc-200 text-zinc-700 z-20 font-[family-name:var(--font-libre-baskerville-b)]">
         SnapCaption
       </h1>

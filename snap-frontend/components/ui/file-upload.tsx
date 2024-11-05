@@ -66,10 +66,7 @@ export const FileUpload = ({
           className="hidden"
         />
         <div className="flex flex-col items-center justify-center">
-          <p className="relative z-20 font-sans font-bold text-zinc-700 dark:text-zinc-300 sm:text-2xl text-xl">
-            Upload file
-          </p>
-          <p className="relative z-20 font-sans font-normal text-neutral-400 dark:text-zinc-400 text-base mt-2">
+          <p className="relative z-20 font-bold text-zinc-700 dark:text-zinc-300 sm:text-2xl text-xl font-[family-name:var(--font-libre-baskerville-b)]">
             Drag or drop your files here or click to upload
           </p>
           <div className="relative w-full mt-10 max-w-xl mx-auto">
@@ -144,10 +141,10 @@ export const FileUpload = ({
                     className="text-neutral-600 flex flex-col items-center"
                   >
                     Drop it
-                    <IconUpload className="h-4 w-4 text-neutral-600 dark:text-neutral-400" />
+                    <IconUpload className="h-6 w-6 text-neutral-600 dark:text-neutral-400" />
                   </motion.p>
                 ) : (
-                  <IconUpload className="h-4 w-4 text-neutral-600 dark:text-neutral-300" />
+                  <IconUpload className="h-6 w-6 text-neutral-600 dark:text-neutral-300" />
                 )}
               </motion.div>
             )}
@@ -158,6 +155,14 @@ export const FileUpload = ({
                 className="absolute opacity-0 border border-dashed border-sky-500 inset-0 z-30 bg-transparent flex items-center justify-center h-32 mt-4 w-full max-w-[8rem] mx-auto rounded-md"
               ></motion.div>
             )}
+          </div>
+          <div className="flex flex-col gap-2 mt-4 items-center">
+            <p className="relative z-20 font-[family-name:var(--font-roboto-condensed-regular)] font-normal text-neutral-400 dark:text-zinc-400 text-base ">
+              * Supported formats: jpg, jpeg, png, svg.
+            </p>
+            <p className="relative z-20 font-[family-name:var(--font-roboto-condensed-regular)] font-normal text-neutral-400 dark:text-zinc-400 text-base">
+              * Maximum file size: 10MB
+            </p>
           </div>
         </div>
       </motion.div>
