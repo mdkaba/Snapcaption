@@ -29,7 +29,7 @@ export function UploadArea() {
         className="bg-zinc-700 hover:bg-zinc-800 font-[family-name:var(--font-libre-baskerville-b)]"
         size={"lg"}
       >
-        Get Captions
+        Generate Captions
       </Button>
     </div>
   );

@@ -156,7 +156,7 @@ export const FileUpload = ({
               ></motion.div>
             )}
           </div>
-          <div className="flex flex-col gap-2 mt-4 items-center">
+          <div className="flex flex-col gap-2 mt-8 items-center">
             <p className="relative z-20 font-[family-name:var(--font-roboto-condensed-regular)] font-normal text-neutral-400 dark:text-zinc-400 text-base ">
               * Supported formats: jpg, jpeg, png, svg.
             </p>
