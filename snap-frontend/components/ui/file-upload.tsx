@@ -56,7 +56,7 @@ export const FileUpload = ({
       <motion.div
         onClick={handleClick}
         whileHover="animate"
-        className="px-10 sm:py-44 py-14 group/file block rounded-lg cursor-pointer w-full relative overflow-hidden"
+        className="sm:px-10 px-5 sm:py-14 py-7 group/file block rounded-lg cursor-pointer w-full relative overflow-hidden"
       >
         <input
           ref={fileInputRef}
@@ -66,7 +66,7 @@ export const FileUpload = ({
           className="hidden"
         />
         <div className="flex flex-col items-center justify-center">
-          <p className="relative z-20 font-bold text-zinc-700 dark:text-zinc-300 sm:text-2xl text-xl font-[family-name:var(--font-libre-baskerville-b)]">
+          <p className="relative z-20 font-bold text-zinc-700 dark:text-zinc-300 sm:text-2xl text-base text-center font-[family-name:var(--font-libre-baskerville-b)]">
             Drag or drop your image here or click to upload
           </p>
           <div className="relative w-full mt-10 max-w-xl mx-auto">
@@ -156,11 +156,11 @@ export const FileUpload = ({
               ></motion.div>
             )}
           </div>
-          <div className="flex flex-col gap-2 mt-8 items-center">
-            <p className="relative z-20 font-[family-name:var(--font-roboto-condensed-regular)] font-normal text-neutral-400 dark:text-zinc-400 text-base ">
+          <div className="flex flex-col gap-2 mt-8 items-center sm:text-base text-xs">
+            <p className="relative z-20 font-[family-name:var(--font-roboto-condensed-regular)] font-normal text-neutral-400 dark:text-zinc-400  ">
               * Supported formats: jpg, jpeg, png, svg.
             </p>
-            <p className="relative z-20 font-[family-name:var(--font-roboto-condensed-regular)] font-normal text-neutral-400 dark:text-zinc-400 text-base">
+            <p className="relative z-20 font-[family-name:var(--font-roboto-condensed-regular)] font-normal text-neutral-400 dark:text-zinc-400">
               * Maximum file size: 10MB
             </p>
           </div>

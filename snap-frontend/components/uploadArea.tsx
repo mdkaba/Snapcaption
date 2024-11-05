@@ -13,7 +13,7 @@ export function UploadArea() {
   return (
     <div id="uploadArea" className="w-full flex flex-col gap-20 items-center">
       <div className="text-center flex flex-col gap-3">
-        <h2 className="font-[family-name:var(--font-libre-baskerville-b)] text-4xl text-zinc-700">
+        <h2 className="font-[family-name:var(--font-libre-baskerville-b)] lg:text-4xl text-2xl text-zinc-700">
           Upload File
         </h2>
         <p className="font-[family-name:var(--font-roboto-condensed-regular)] text-zinc-600 text-xl">
