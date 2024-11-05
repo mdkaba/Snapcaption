@@ -16,7 +16,7 @@ export default function Home() {
   };
   return (
     <div className="dark:bg-zinc-900 bg-zinc-200 relative">
-      <Navbar scrollToUpload={scrollToUpload} />
+      <Navbar />
       <section className="flex flex-col gap-5 items-center justify-center min-h-screen p-8 sm:p-10">
         <TitleType scrollToUpload={scrollToUpload} />
       </section>

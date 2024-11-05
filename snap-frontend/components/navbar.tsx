@@ -5,15 +5,11 @@ import {
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 
-interface TitleTypeProps {
-  scrollToUpload: () => void;
-}
-
-export function Navbar({ scrollToUpload }: TitleTypeProps) {
+export function Navbar() {
   const components: { title: string; href: string }[] = [
     {
       title: "Upload",
-      href: `/${scrollToUpload}`,
+      href: `#uploadArea`,
     },
     {
       title: "About",

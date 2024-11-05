@@ -11,13 +11,14 @@ export function UploadArea() {
     console.log(files);
   };
   return (
-    <div className="w-full flex flex-col gap-20 items-center">
+    <div id="uploadArea" className="w-full flex flex-col gap-20 items-center">
       <div className="text-center flex flex-col gap-3">
         <h2 className="font-[family-name:var(--font-libre-baskerville-b)] text-4xl text-zinc-700">
           Upload File
         </h2>
         <p className="font-[family-name:var(--font-roboto-condensed-regular)] text-zinc-600 text-xl">
-          Upload an image to generate captions
+          Upload an image to generate{" "}
+          <span className="text-sky-700"> captions</span>{" "}
         </p>
       </div>
       <Card className="bg-transparent flex flex-col w-full items-center border-dashed border-2 border-zinc-400">
