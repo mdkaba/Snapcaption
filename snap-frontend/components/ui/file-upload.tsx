@@ -48,8 +48,14 @@ export const FileUpload = ({
 
     if (validFiles.length === 0) {
       toast.warning("Uh oh! Something went wrong.", {
-        description:
-          "Invalid file type. Please upload jpg, jpeg, png, or svg files.",
+        description: (
+          <div style={{ color: "#9b2c2c", fontSize: 16 }}>
+            <p>Invalid file type.</p>
+            <p>Please upload jpg, jpeg, png, or svg files.</p>
+          </div>
+        ),
+        className:
+          "text-lg font-[family-name:var(--font-roboto-condensed-regular)] gap-5 p-5",
         style: {
           backgroundColor: "#ffe4e6",
           borderColor: "#fecdd3",
