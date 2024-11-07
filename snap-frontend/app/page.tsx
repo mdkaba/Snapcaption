@@ -3,6 +3,7 @@ import React, { useRef } from "react";
 import { TitleType } from "@/components/title";
 import { UploadArea } from "@/components/uploadArea";
 import { Navbar } from "@/components/navbar";
+import { Toaster } from "sonner";
 
 export default function Home() {
   // Create a reference to the upload area
@@ -16,6 +17,7 @@ export default function Home() {
   };
   return (
     <div className="dark:bg-zinc-900 bg-zinc-200 relative">
+      <Toaster position="bottom-right" />
       <Navbar />
       <section className="flex flex-col gap-5 items-center justify-center min-h-screen p-8 sm:p-10">
         <TitleType scrollToUpload={scrollToUpload} />

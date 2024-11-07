@@ -21,7 +21,7 @@ export function UploadArea() {
           <span className="text-sky-700"> captions</span>{" "}
         </p>
       </div>
-      <Card className="bg-transparent flex flex-col w-full items-center border-dashed border-2 border-zinc-400">
+      <Card className="bg-transparent flex flex-col w-full items-center border-dashed border border-zinc-400">
         <CardContent className="w-full">
           <FileUpload onChange={handleFileUpload} />
         </CardContent>

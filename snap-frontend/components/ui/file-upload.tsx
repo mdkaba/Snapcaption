@@ -3,6 +3,7 @@ import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { IconUpload } from "@tabler/icons-react";
 import { useDropzone } from "react-dropzone";
+import { toast } from "sonner";
 
 const mainVariant = {
   initial: {
@@ -31,15 +32,45 @@ export const FileUpload = ({
   onChange?: (files: File[]) => void;
 }) => {
   const [files, setFiles] = useState<File[]>([]);
+  const [hoveredFileIndex, setHoveredFileIndex] = useState<number | null>(null); // Track which file is hovered
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (newFiles: File[]) => {
-    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-    onChange && onChange(newFiles);
+    const allowedTypes = [
+      "image/jpg",
+      "image/jpeg",
+      "image/png",
+      "image/svg+xml",
+    ];
+    const validFiles = newFiles.filter((file) =>
+      allowedTypes.includes(file.type)
+    );
+
+    if (validFiles.length === 0) {
+      toast.warning("Uh oh! Something went wrong.", {
+        description:
+          "Invalid file type. Please upload jpg, jpeg, png, or svg files.",
+        style: {
+          backgroundColor: "#ffe4e6",
+          borderColor: "#fecdd3",
+          color: "#9b2c2c",
+        },
+      });
+    } else {
+      setFiles((prevFiles) => [...prevFiles, ...validFiles]);
+      onChange && onChange(validFiles); // Notify parent component of valid file changes
+    }
   };
 
   const handleClick = () => {
     fileInputRef.current?.click();
+  };
+
+  const handleRemoveFile = (fileIndex: number) => {
+    setFiles((prevFiles) => prevFiles.filter((_, idx) => idx !== fileIndex));
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const { getRootProps, isDragActive } = useDropzone({
@@ -62,6 +93,7 @@ export const FileUpload = ({
           ref={fileInputRef}
           id="file-upload-handle"
           type="file"
+          accept="image/jpg, image/jpeg, image/png, image/svg+xml"
           onChange={(e) => handleFileChange(Array.from(e.target.files || []))}
           className="hidden"
         />
@@ -75,12 +107,22 @@ export const FileUpload = ({
                 <motion.div
                   key={"file" + idx}
                   layoutId={idx === 0 ? "file-upload" : "file-upload-" + idx}
+                  whileHover={{
+                    scale: 1.03,
+                    transition: {
+                      type: "spring",
+                      stiffness: 300, // Higher stiffness for a bouncier effect
+                      damping: 20, // Lower damping for more bounce
+                    },
+                  }}
                   className={cn(
-                    "relative overflow-hidden z-40 bg-white dark:bg-neutral-900 flex flex-col items-start justify-start md:h-24 p-4 mt-4 w-full mx-auto rounded-md",
+                    "relative overflow-hidden z-40 bg-zinc-100 dark:bg-zinc-800 flex flex-col items-start justify-start md:h-fit p-7 mt-4 w-full mx-auto rounded-md",
                     "shadow-sm"
                   )}
+                  onMouseEnter={() => setHoveredFileIndex(idx)} // Set hover on file
+                  onMouseLeave={() => setHoveredFileIndex(null)} // Remove hover when mouse leaves
                 >
-                  <div className="flex justify-between w-full items-center gap-4">
+                  <div className="flex justify-between w-full items-center gap-4 mt-2 font-[family-name:var(--font-roboto-condensed-regular)]">
                     <motion.p
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
@@ -99,12 +141,12 @@ export const FileUpload = ({
                     </motion.p>
                   </div>
 
-                  <div className="flex text-sm md:flex-row flex-col items-start md:items-center w-full mt-2 justify-between text-zinc-600 dark:text-zinc-400">
+                  <div className="flex text-sm md:flex-row flex-col items-start md:items-center w-full mt-2 justify-between text-zinc-600 dark:text-zinc-400 font-[family-name:var(--font-roboto-condensed-regular)]">
                     <motion.p
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       layout
-                      className="px-1 py-0.5 rounded-md bg-gray-100 dark:bg-neutral-800 "
+                      className="px-1 py-0.5 rounded-md bg-zinc-200 dark:bg-neutral-800 "
                     >
                       {file.type}
                     </motion.p>
@@ -118,6 +160,34 @@ export const FileUpload = ({
                       {new Date(file.lastModified).toLocaleDateString()}
                     </motion.p>
                   </div>
+                  {/* Remove button appears when hovered */}
+                  {hoveredFileIndex === idx && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 20,
+                      }}
+                      className="absolute top-0 right-0 pr-2 pt-2 cursor-pointer text-rose-700"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveFile(idx);
+                      }} // Remove file on click
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        fill="currentColor"
+                        className="bi bi-x-circle"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M11.742 4.258a1 1 0 0 0-1.414 0L8 6.586 5.672 4.258a1 1 0 0 0-1.414 1.414L6.586 8 4.258 10.328a1 1 0 0 0 1.414 1.414L8 9.414l2.328 2.328a1 1 0 0 0 1.414-1.414L9.414 8l2.328-2.328a1 1 0 0 0 0-1.414z" />
+                      </svg>
+                    </motion.div>
+                  )}
                 </motion.div>
               ))}
             {!files.length && (
@@ -138,13 +208,13 @@ export const FileUpload = ({
                   <motion.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="text-neutral-600 flex flex-col items-center"
+                    className="text-zinc-600 flex flex-col items-center font-[family-name:var(--font-roboto-condensed-regular)]"
                   >
                     Drop it
-                    <IconUpload className="h-6 w-6 text-neutral-600 dark:text-neutral-400" />
+                    <IconUpload className="h-6 w-6 text-zinc-600 dark:text-neutral-400" />
                   </motion.p>
                 ) : (
-                  <IconUpload className="h-6 w-6 text-neutral-600 dark:text-neutral-300" />
+                  <IconUpload className="h-6 w-6 text-zinc-600 dark:text-neutral-300" />
                 )}
               </motion.div>
             )}
@@ -169,27 +239,3 @@ export const FileUpload = ({
     </div>
   );
 };
-
-export function GridPattern() {
-  const columns = 41;
-  const rows = 11;
-  return (
-    <div className="flex bg-gray-100 dark:bg-neutral-900 flex-shrink-0 flex-wrap justify-center items-center gap-x-px gap-y-px  scale-105">
-      {Array.from({ length: rows }).map((_, row) =>
-        Array.from({ length: columns }).map((_, col) => {
-          const index = row * columns + col;
-          return (
-            <div
-              key={`${col}-${row}`}
-              className={`w-10 h-10 flex flex-shrink-0 rounded-[2px] ${
-                index % 2 === 0
-                  ? "bg-gray-50 dark:bg-neutral-950"
-                  : "bg-gray-50 dark:bg-neutral-950 shadow-[0px_0px_1px_3px_rgba(255,255,255,1)_inset] dark:shadow-[0px_0px_1px_3px_rgba(0,0,0,1)_inset]"
-              }`}
-            />
-          );
-        })
-      )}
-    </div>
-  );
-}
