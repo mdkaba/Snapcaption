@@ -26,6 +26,15 @@ const secondaryVariant = {
   },
 };
 
+const MAX_FILE_SIZE_MB = 5;
+
+const ALLOWED_FILE_TYPES = [
+  "image/jpg",
+  "image/jpeg",
+  "image/png",
+  "image/svg+xml",
+];
+
 export const FileUpload = ({
   onChange,
 }: {
@@ -36,33 +45,46 @@ export const FileUpload = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (newFiles: File[]) => {
-    const allowedTypes = [
-      "image/jpg",
-      "image/jpeg",
-      "image/png",
-      "image/svg+xml",
-    ];
-    const validFiles = newFiles.filter((file) =>
-      allowedTypes.includes(file.type)
-    );
+    const validFiles = newFiles.filter((file) => {
+      if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+        toast.warning("Uh oh! Something went wrong...", {
+          description: (
+            <div style={{ color: "#9b2c2c", fontSize: 16 }}>
+              <p>Invalid file type.</p>
+              <p>Please upload jpg, jpeg, png, or svg files.</p>
+            </div>
+          ),
+          className:
+            "text-lg font-[family-name:var(--font-roboto-condensed-regular)] gap-5 p-5",
+          style: {
+            backgroundColor: "#ffe4e6",
+            borderColor: "#fecdd3",
+            color: "#9b2c2c",
+          },
+        });
+        return false;
+      } else if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+        toast.warning("Uh oh! Something went wrong...", {
+          description: (
+            <div style={{ color: "#9b2c2c", fontSize: 16 }}>
+              <p>File size too large.</p>
+              <p>File size exceeds 10MB.</p>
+            </div>
+          ),
+          className:
+            "text-lg font-[family-name:var(--font-roboto-condensed-regular)] gap-5 p-5",
+          style: {
+            backgroundColor: "#ffe4e6",
+            borderColor: "#fecdd3",
+            color: "#9b2c2c",
+          },
+        });
+        return false;
+      }
+      return true;
+    });
 
-    if (validFiles.length === 0) {
-      toast.warning("Uh oh! Something went wrong.", {
-        description: (
-          <div style={{ color: "#9b2c2c", fontSize: 16 }}>
-            <p>Invalid file type.</p>
-            <p>Please upload jpg, jpeg, png, or svg files.</p>
-          </div>
-        ),
-        className:
-          "text-lg font-[family-name:var(--font-roboto-condensed-regular)] gap-5 p-5",
-        style: {
-          backgroundColor: "#ffe4e6",
-          borderColor: "#fecdd3",
-          color: "#9b2c2c",
-        },
-      });
-    } else {
+    if (validFiles.length > 0) {
       setFiles((prevFiles) => [...prevFiles, ...validFiles]);
       onChange && onChange(validFiles); // Notify parent component of valid file changes
     }
