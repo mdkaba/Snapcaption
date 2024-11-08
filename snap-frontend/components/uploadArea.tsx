@@ -3,13 +3,35 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/ui/file-upload";
 import { useState } from "react";
+import { postImage } from "@/api/apiRequest";
 
 export function UploadArea() {
   const [files, setFiles] = useState<File[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+
   const handleFileUpload = (files: File[]) => {
     setFiles(files);
     console.log(files);
   };
+
+  const handleGenerateCaptions = async () => {
+    if (files.length === 0) {
+      console.warn("No file to upload");
+      return;
+    }
+
+    try {
+      const uploadResult = await postImage(files[0]); // Upload the first file
+      console.log("Upload to blob storage success:", uploadResult);
+
+      // // Display a success message with the filename or image URL
+      // console.log(`Image "${uploadResult.filename}" uploaded successfully!`);
+      // console.log(`Image URL: ${uploadResult.image_url}`);
+    } catch (error) {
+      console.error("Failed to upload image:", error);
+    }
+  };
+
   return (
     <div id="uploadArea" className="w-full flex flex-col gap-20 items-center">
       <div className="text-center flex flex-col gap-3">
@@ -29,6 +51,7 @@ export function UploadArea() {
       <Button
         className="bg-zinc-700 hover:bg-zinc-800 font-[family-name:var(--font-libre-baskerville-b)]"
         size={"lg"}
+        onClick={handleGenerateCaptions}
       >
         Generate Captions
       </Button>
