@@ -1,8 +1,9 @@
 from fastapi import APIRouter, HTTPException, UploadFile, File
+from fastapi.responses import JSONResponse
 from azure.storage.blob import BlobServiceClient, ContentSettings
 import uuid
 from dotenv import load_dotenv
-import os
+import os, requests
 
 load_dotenv()
 
@@ -12,6 +13,10 @@ router = APIRouter()
 connection_string = os.getenv("BLOB_STORAGE_CONNECTION_STRING")
 blob_service_client = BlobServiceClient.from_connection_string(connection_string)
 container_name = os.getenv("BLOB_CONTAINER")
+
+# Initialize the Computer Vision API client
+cv_key = os.getenv("COMPUTER_VISION_KEY")
+cv_endpoint = os.getenv("COMPUTER_VISION_CONNECTION_STRING") + "/vision/v3.2/analyze"
 
 
 @router.get("/")
@@ -55,6 +60,37 @@ async def upload_image(image: UploadFile = File(...)):
 
 
 @router.get("/get_caption")
-async def get_caption(image_id: str):
-    # Generate a caption for the image (implementation not provided)
-    return {"caption": f"A caption for the image with id {image_id}"}
+async def get_caption(image_url: str):
+    """
+    Generate a caption for the image using Azure Computer Vision.
+    """
+    # Define the request headers with the subscription key
+    headers = {"Ocp-Apim-Subscription-Key": cv_key, "Content-Type": "application/json"}
+
+    params = {
+        "visualFeatures": "Description",
+    }
+
+    # Define the data payload with the image URL
+    data = {"url": image_url}
+
+    try:
+        # Make a request to the Computer Vision API
+        response = requests.post(cv_endpoint, headers=headers, params=params, json=data)
+        response.raise_for_status()  # Raise an error for non-200 responses
+        result = response.json()
+
+        # Extract the caption from the response
+        if "description" in result and "captions" in result["description"]:
+            caption = result["description"]["captions"][0]["text"]
+            confidence = result["description"]["captions"][0]["confidence"]
+            return JSONResponse(content={"caption": caption, "confidence": confidence})
+        else:
+            return JSONResponse(
+                content={"caption": "No description available for the image."},
+                status_code=404,
+            )
+
+    except requests.exceptions.RequestException as e:
+        # Handle any request errors
+        raise HTTPException(status_code=500, detail=f"Error generating caption: {e}")

@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/ui/file-upload";
 import { useState } from "react";
-import { postImage } from "@/api/apiRequest";
+import { postImage, generateCaption } from "@/api/apiRequest";
 
 export function UploadArea() {
   const [files, setFiles] = useState<File[]>([]);
@@ -24,9 +24,12 @@ export function UploadArea() {
       const uploadResult = await postImage(files[0]); // Upload the first file
       console.log("Upload to blob storage success:", uploadResult);
 
-      // // Display a success message with the filename or image URL
-      // console.log(`Image "${uploadResult.filename}" uploaded successfully!`);
-      // console.log(`Image URL: ${uploadResult.image_url}`);
+      const imageURL = uploadResult.image_url;
+      console.log("Image URL:", imageURL);
+
+      // Call the generate caption API
+      const captionResult = await generateCaption(imageURL);
+      console.log("Caption generation success:", captionResult);
     } catch (error) {
       console.error("Failed to upload image:", error);
     }
