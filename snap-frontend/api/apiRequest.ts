@@ -26,7 +26,6 @@ export const generateCaption = async (imageURL: string) => {
       params: { image_url: imageURL },
       headers: { "Content-Type": "application/json" },
     });
-
     return response.data; // Return response data to handle it in the component
   } catch (error) {
     console.error("Failed to generate caption:", error);

@@ -16,7 +16,10 @@ container_name = os.getenv("BLOB_CONTAINER")
 
 # Initialize the Computer Vision API client
 cv_key = os.getenv("COMPUTER_VISION_KEY")
-cv_endpoint = os.getenv("COMPUTER_VISION_CONNECTION_STRING") + "/vision/v3.2/analyze"
+cv_endpoint = (
+    os.getenv("COMPUTER_VISION_CONNECTION_STRING")
+    + "computervision/imageanalysis:analyze?api-version=2023-04-01-preview"
+)
 
 
 @router.get("/")
@@ -67,9 +70,7 @@ async def get_caption(image_url: str):
     # Define the request headers with the subscription key
     headers = {"Ocp-Apim-Subscription-Key": cv_key, "Content-Type": "application/json"}
 
-    params = {
-        "visualFeatures": "Description",
-    }
+    params = {"features": "denseCaptions", "language": "en"}
 
     # Define the data payload with the image URL
     data = {"url": image_url}
@@ -81,10 +82,8 @@ async def get_caption(image_url: str):
         result = response.json()
 
         # Extract the caption from the response
-        if "description" in result and "captions" in result["description"]:
-            caption = result["description"]["captions"][0]["text"]
-            confidence = result["description"]["captions"][0]["confidence"]
-            return JSONResponse(content={"caption": caption, "confidence": confidence})
+        if "denseCaptionsResult" in result:
+            return result
         else:
             return JSONResponse(
                 content={"caption": "No description available for the image."},
