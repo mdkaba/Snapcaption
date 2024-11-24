@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { motion, stagger, useAnimate } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-export const TextGenerateEffect = ({
+export const TitleGenerateEffect = ({
   words,
   className,
   filter = true,
@@ -37,7 +37,9 @@ export const TextGenerateEffect = ({
           return (
             <motion.span
               key={word + idx}
-              className="dark:text-white text-black opacity-0"
+              className={`opacity-0 ${
+                idx === 4 ? "text-sky-800" : "dark:text-white text-zinc-700"
+              }`}
               style={{
                 filter: filter ? "blur(10px)" : "none",
               }}
@@ -53,7 +55,7 @@ export const TextGenerateEffect = ({
   return (
     <div className={cn("font-bold", className)}>
       <div className="mt-4">
-        <div className=" dark:text-white text-black text-2xl leading-snug tracking-wide">
+        <div className=" dark:text-white text-blue-700 text-center lg:w-[65rem] lg:text-6xl text-3xl lg:leading-snug tracking-wide">
           {renderWords()}
         </div>
       </div>

@@ -3,11 +3,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/ui/file-upload";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { postImage, generateCaption } from "@/api/apiRequest";
 
 export function UploadArea() {
   const [files, setFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const router = useRouter();
 
   const handleFileUpload = (files: File[]) => {
     setFiles(files);
@@ -25,11 +27,13 @@ export function UploadArea() {
       console.log("Upload to blob storage success:", uploadResult);
 
       const imageURL = uploadResult.image_url;
-      console.log("Image URL:", imageURL);
+      // console.log("Image URL:", imageURL);
 
       // Call the generate caption API
-      const captionResult = await generateCaption(imageURL);
-      console.log("Caption generation success:", captionResult);
+      // const captionResult = await generateCaption(imageURL);
+      // console.log("Caption generation success:", captionResult);
+
+      router.push(`/result?img=${encodeURIComponent(imageURL)}`);
     } catch (error) {
       console.error("Failed to upload image:", error);
     }
