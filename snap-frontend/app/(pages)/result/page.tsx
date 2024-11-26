@@ -18,6 +18,7 @@ const ResultPage = () => {
   const searchParams = useSearchParams(); // Get search params from the URL
   const [captions, setCaptions] = useState<string>(""); // State to store captions
   const [loading, setLoading] = useState(true);
+  const [captionHistory, setCaptionHistory] = useState<any[]>([]);
 
   const image: string = searchParams.get("img") || "";
 
@@ -51,6 +52,19 @@ const ResultPage = () => {
       fetchCaptions();
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    const fetchCaptionHistory = async () => {
+      try {
+        const history = await getCaptions(); // Fetch all stored captions
+        setCaptionHistory(history?.captions || []);
+      } catch (error) {
+        console.error("Failed to fetch caption history:", error);
+      }
+    };
+
+    fetchCaptionHistory();
+  }, []);
 
   return (
     <div className="dark:bg-zinc-900 bg-zinc-200 relative w-full py-10 px-5">
@@ -86,6 +100,54 @@ const ResultPage = () => {
           >
             Retry
           </Button>
+          <div className="w-full mt-12">
+            <h2 className="text-2xl font-bold text-zinc-700 mb-4 font-[family-name:var(--font-libre-baskerville-b)] text-center">
+              Caption History
+            </h2>
+            <div className="overflow-x-auto">
+              <table className="table-auto border-collapse border border-zinc-400 w-full text-sm rounded-lg overflow-hidden">
+                <thead className="bg-zinc-300">
+                  <tr>
+                    <th className="border border-zinc-200 px-4 py-2 text-left">
+                      ID
+                    </th>
+                    <th className="border border-zinc-200 px-4 py-2 text-left">
+                      Refined Caption
+                    </th>
+                    <th className="border border-zinc-200 px-4 py-2 text-left">
+                      Sentences
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {captionHistory.map((caption, index) => (
+                    <tr
+                      key={caption.id || index}
+                      className={`${
+                        index % 2 === 0 ? "bg-zinc-100" : "bg-zinc-200"
+                      }`}
+                    >
+                      <td className="border border-zinc-400 px-4 py-2">
+                        {caption.id}
+                      </td>
+                      <td className="border border-zinc-400 px-4 py-2">
+                        {caption.refined_caption}
+                      </td>
+                      <td className="border border-zinc-400 px-4 py-2">
+                        <ul>
+                          {caption.sentences.map(
+                            (sentence: string, i: number) => (
+                              <li key={i}>{sentence}</li>
+                            )
+                          )}
+                        </ul>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </section>
       ) : (
         <section className="w-full h-full flex flex-col items-center justify-center min-h-screen p-12 gap-24">
