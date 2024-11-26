@@ -32,3 +32,19 @@ export const generateCaption = async (imageURL: string) => {
     throw error; // Throw error to handle it in the component
   }
 };
+
+export const generateDescriptiveCaption = async (captions: string[]) => {
+  try {
+    const response = await axios.post(
+      "http://127.0.0.1:8000/generate_caption",
+      captions,
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    return response.data; // Return response data to handle it in the component
+  } catch (error) {
+    console.error("Failed to generate caption:", error);
+    throw error; // Throw error to handle it in the component
+  }
+};

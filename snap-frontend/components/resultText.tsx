@@ -1,11 +1,9 @@
 import { TextGenerateEffect } from "./ui/text-generate-effect";
 
-export function ResultText({ captions }: { captions: any[] }) {
+export function ResultText({ captions }: { captions: string }) {
   return (
     <div>
-      {captions.map((caption, index) => (
-        <TextGenerateEffect key={index} words={caption} />
-      ))}
+      <TextGenerateEffect words={captions} />
     </div>
   );
 }
