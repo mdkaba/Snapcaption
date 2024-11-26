@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException, UploadFile, File
+from fastapi import APIRouter, HTTPException, UploadFile, File, Body
 from fastapi.responses import JSONResponse
 from azure.storage.blob import BlobServiceClient, ContentSettings
 import uuid
 from dotenv import load_dotenv
 import os, requests, logging
+from azure.cosmos import CosmosClient
 
 load_dotenv()
 
@@ -28,6 +29,26 @@ cv_endpoint = (
 openai_key = os.getenv("OPENAI_KEY")
 openai_endpoint = os.getenv("OPENAI_CONNECTION_STRING")
 
+#initialize Cosmos CB CLient
+cosmos_db_connection_string = os.getenv("COSMOS_CONNECTION_STRING")
+cosmos_db_database = os.getenv("COSMOS_DATABASE")
+cosmos_db_container = os.getenv("COSMOS_COLLECTION")
+
+#debugging purposes
+if not cosmos_db_connection_string:
+    raise ValueError("COSMOS_DB_CONNECTION_STRING is not set. Check your .env file.")
+
+logging.info(f"Using database: {cosmos_db_database}, container: {cosmos_db_container}")
+
+try:
+    cosmos_client = CosmosClient.from_connection_string(cosmos_db_connection_string)
+    database = cosmos_client.get_database_client(cosmos_db_database)
+    container = database.get_container_client(cosmos_db_container)
+except Exception as e:
+    logger.error(f"Error connecting to Cosmos DB: {e}")
+    raise HTTPException(
+        status_code=500, detail=f"Failed to connect to Cosmos DB: {str(e)}"
+    )
 
 @router.get("/")
 async def read_root():
@@ -193,3 +214,113 @@ async def generate_caption(captions: list[str]):
     except Exception as e:
         logger.error(f"Unexpected Error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+
+
+
+
+
+@router.post("/store_caption")
+async def store_caption(caption: str = Body(..., embed=True)):
+    """
+    Store a caption in CosmosDB as an array of strings.
+    - **caption**: The caption as a string. It will be split into multiple strings (sentences).
+    """
+    logging.info(f"Incoming caption: {caption}")
+
+    if not caption or not isinstance(caption, str):
+        raise HTTPException(status_code=400, detail="Invalid input: Caption must be a string.")
+
+    caption = caption.strip()
+    if len(caption) < 5:  # Minimum meaningful length for a paragraph
+        raise HTTPException(status_code=400, detail="Caption is too short to be meaningful.")
+
+    # Split paragraph into sentences and trim each sentence
+    sentences = [sentence.strip() for sentence in caption.split('.') if sentence.strip()]
+
+    try:
+        # Create a document for CosmosDB
+        document = {
+            "id": str(uuid.uuid4()),  # Generate unique ID
+            "sentences": sentences  # Store sentences as an array
+        }
+
+        # Save the document in CosmosDB
+        container.create_item(body=document)
+
+        logging.info(f"Stored document: {document}")
+        return {"message": "Caption stored successfully.", "id": document["id"]}
+    except Exception as e:
+        logging.error(f"Error storing caption: {e}")
+        raise HTTPException(status_code=500, detail="Failed to store caption.")
+
+
+
+
+
+@router.get("/get_caption")
+async def get_captions():
+    """
+    Retrieve all captions from CosmosDB as plain strings.
+    """
+    try:
+        logging.info("Fetching all captions from CosmosDB.")
+
+        # Query to fetch all items
+        query = "SELECT c.id, c.caption FROM c"
+        items = list(container.query_items(query=query, enable_cross_partition_query=True))
+
+        if not items:
+            logging.warning("No captions found in the database.")
+            return {"message": "No captions found.", "captions": []}
+
+        # Clean and format results
+        cleaned_items = []
+        for item in items:
+            caption = item.get("caption", None)
+            if isinstance(caption, str):  # Ensure it's a valid string
+                cleaned_items.append({"id": item["id"], "caption": caption})
+            else:
+                logging.warning(f"Skipping item with ID {item['id']} due to invalid 'caption'.")
+
+        logging.info(f"Retrieved captions: {cleaned_items}")
+        return {"captions": cleaned_items}
+    except Exception as e:
+        logging.error(f"Error retrieving captions: {e}")
+        raise HTTPException(status_code=500, detail="Failed to retrieve captions.")@router.get("/get_captions")
+
+
+# @router.post("/cleanup_captions")
+# async def cleanup_captions():
+#     """
+#     Cleanup existing data in CosmosDB to ensure all captions are plain strings.
+#     """
+#     try:
+#         logging.info("Starting cleanup of captions in CosmosDB.")
+
+#         # Partition key field (replace with your actual partition key field)
+#         partition_key_field = "metadata"  # Replace 'id' with the actual partition key field name
+
+#         # Iterate over all items in the container
+#         for item in container.read_all_items():
+#             if "paragraph" in item:
+#                 # Ensure the caption is a valid plain string
+#                 if not isinstance(item["paragraph"], str):
+#                     logging.warning(f"Fixing invalid paragraph for item ID {item['id']}")
+#                     item["caption"] = "Invalid paragraph cleaned"
+#                     container.replace_item(item=item["id"], body=item)
+#             else:
+#                 # Delete documents without a 'caption' field
+#                 partition_key = item.get(partition_key_field, None)
+#                 if partition_key is None:
+#                     logging.warning(f"Skipping deletion for item ID {item['id']} due to missing partition key.")
+#                     continue
+
+#                 logging.warning(f"Deleting item with ID {item['id']} due to missing 'caption' field.")
+#                 container.delete_item(item=item["id"], partition_key=partition_key)
+
+#         logging.info("Cleanup completed successfully.")
+#         return {"message": "Cleanup completed successfully."}
+#     except Exception as e:
+#         logging.error(f"Error during cleanup: {e}")
+#         raise HTTPException(status_code=500, detail="Failed to cleanup captions.")
