@@ -50,9 +50,8 @@ const ResultPage = () => {
 
           setCaptions(captionText?.refined_caption);
           setLoading(false);
-
           if (captionText?.refined_caption) {
-            storeCaption(captionText.refined_caption)
+            storeCaption(captionText)
               .then((storeResponse) => {
                 console.log("Caption stored successfully:", storeResponse);
                 fetchCaptionHistory(); // Fetch captions after storing

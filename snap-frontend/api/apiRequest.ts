@@ -6,7 +6,7 @@ export const postImage = async (image: File) => {
 
   try {
     const response = await axios.post(
-      "https://snapcaption-backend-336921101433.us-central1.run.app/upload_image",
+      "https://snapcaption-backend2-336921101433.us-central1.run.app/upload_image",
       formData,
       {
         headers: { "Content-Type": "multipart/form-data" },
@@ -23,7 +23,7 @@ export const postImage = async (image: File) => {
 export const generateCaption = async (imageURL: string) => {
   try {
     const response = await axios.get(
-      "https://snapcaption-backend-336921101433.us-central1.run.app/get_caption",
+      "https://snapcaption-backend2-336921101433.us-central1.run.app/get_caption",
       {
         params: { image_url: imageURL },
         headers: { "Content-Type": "application/json" },
@@ -39,7 +39,7 @@ export const generateCaption = async (imageURL: string) => {
 export const generateDescriptiveCaption = async (captions: string[]) => {
   try {
     const response = await axios.post(
-      "https://snapcaption-backend-336921101433.us-central1.run.app/generate_caption",
+      "https://snapcaption-backend2-336921101433.us-central1.run.app/generate_caption",
       captions,
       {
         headers: { "Content-Type": "application/json" },
@@ -55,7 +55,7 @@ export const generateDescriptiveCaption = async (captions: string[]) => {
 export const storeCaption = async (caption: string) => {
   try {
     const response = await axios.post(
-      "https://snapcaption-backend-336921101433.us-central1.run.app/store_caption",
+      "https://snapcaption-backend2-336921101433.us-central1.run.app/store_caption",
       caption,
       {
         headers: { "Content-Type": "application/json" },
@@ -71,7 +71,7 @@ export const storeCaption = async (caption: string) => {
 export const getCaptions = async () => {
   try {
     const response = await axios.get(
-      "https://snapcaption-backend-336921101433.us-central1.run.app/get_stored_caption",
+      "https://snapcaption-backend2-336921101433.us-central1.run.app/get_stored_caption",
       {
         headers: { "Content-Type": "application/json" },
       }

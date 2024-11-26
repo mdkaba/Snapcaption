@@ -169,6 +169,7 @@ async def store_caption(payload: dict = Body(...)):
             "refined_caption": refined_caption,
             "sentences": sentences,  # Store sentences as a list
         }
+        print(document)
         container.create_item(body=document)
         return {"message": "Caption stored successfully.", "id": document["id"]}
     except exceptions.CosmosHttpResponseError as e:
