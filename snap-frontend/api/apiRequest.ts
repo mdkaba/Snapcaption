@@ -71,7 +71,7 @@ export const storeCaption = async (caption: string) => {
 export const getCaptions = async () => {
   try {
     const response = await axios.get(
-      "https://snapcaption-backend-336921101433.us-central1.run.app/get_captions",
+      "https://snapcaption-backend-336921101433.us-central1.run.app/get_stored_caption",
       {
         headers: { "Content-Type": "application/json" },
       }

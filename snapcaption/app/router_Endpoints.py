@@ -4,7 +4,7 @@ from azure.storage.blob import BlobServiceClient, ContentSettings
 import uuid
 from dotenv import load_dotenv
 import os, requests, logging
-from azure.cosmos import CosmosClient
+from azure.cosmos import CosmosClient, exceptions
 
 load_dotenv()
 
@@ -48,6 +48,7 @@ except Exception as e:
     raise HTTPException(
         status_code=500, detail=f"Failed to connect to Cosmos DB: {str(e)}"
     )
+
 
 @router.get("/")
 async def read_root():
@@ -140,38 +141,71 @@ async def generate_caption(captions: list[str]):
                 detail="Azure OpenAI API error: Missing 'choices' in response.",
             )
     except requests.exceptions.RequestException as e:
-        raise HTTPException(
-            status_code=500, detail=f"Azure OpenAI API error: {str(e)}"
-        )
-
+        raise HTTPException(status_code=500, detail=f"Azure OpenAI API error: {str(e)}")
 
 
 @router.post("/store_caption")
-async def store_caption(caption: str = Body(..., embed=True)):
-    if not caption or not isinstance(caption, str):
-        raise HTTPException(status_code=400, detail="Caption must be a string.")
-    sentences = [sentence.strip() for sentence in caption.split(".") if sentence.strip()]
+async def store_caption(payload: dict = Body(...)):
+    """
+    Endpoint to store refined captions in Azure Cosmos DB.
+    Expects a JSON payload with a `refined_caption` field.
+    """
+    # Validate payload
+    refined_caption = payload.get("refined_caption")
+    if not refined_caption or not isinstance(refined_caption, str):
+        raise HTTPException(
+            status_code=400, detail="`refined_caption` must be a non-empty string."
+        )
+
+    # Process the caption into sentences
+    sentences = [
+        sentence.strip() for sentence in refined_caption.split(".") if sentence.strip()
+    ]
+
+    # Prepare the document for Cosmos DB
     try:
         document = {
-            "id": str(uuid.uuid4()),
-            "sentences": sentences,
+            "id": str(uuid.uuid4()),  # Unique ID for the document
+            "refined_caption": refined_caption,
+            "sentences": sentences,  # Store sentences as a list
         }
         container.create_item(body=document)
         return {"message": "Caption stored successfully.", "id": document["id"]}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Failed to store caption.")
+    except exceptions.CosmosHttpResponseError as e:
+        raise HTTPException(
+            status_code=500, detail=f"Failed to store caption: {str(e)}"
+        )
 
 
-@router.get("/get_captions")
+@router.get("/get_stored_caption")
 async def get_captions():
+    """
+    Endpoint to retrieve stored captions from Azure Cosmos DB.
+    Returns all stored captions with their IDs, refined captions, and sentences.
+    """
     try:
-        query = "SELECT c.id, c.sentences FROM c"
-        items = list(container.query_items(query=query, enable_cross_partition_query=True))
+        # Query to fetch all documents from the container
+        query = "SELECT c.id, c.refined_caption, c.sentences FROM c"
+        items = list(
+            container.query_items(query=query, enable_cross_partition_query=True)
+        )
+
+        # Check if items exist
         if not items:
             return {"message": "No captions found.", "captions": []}
+
+        # Format the retrieved items for the response
         formatted_items = [
-            {"id": item["id"], "sentences": item.get("sentences", [])} for item in items
+            {
+                "id": item["id"],
+                "refined_caption": item.get("refined_caption", ""),
+                "sentences": item.get("sentences", []),
+            }
+            for item in items
         ]
         return {"captions": formatted_items}
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Failed to retrieve captions.")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to retrieve captions: {str(e)}"
+        )

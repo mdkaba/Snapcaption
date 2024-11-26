@@ -53,31 +53,31 @@ export const FileUpload = ({ onFileUpload }: FileUploadProps) => {
       className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer ${
         isDragging ? "border-sky-600 bg-sky-50" : "border-zinc-400"
       }`}
-      >
-        <input {...getInputProps()} />
-        <div className="flex flex-col items-center justify-center gap-4">
-          <motion.div
-            className="text-sky-600"
-            animate={{ scale: isDragging ? 1.2 : 1 }}
-          >
-            <IconUpload size={48} />
-          </motion.div>
-          <p className="text-zinc-600">
-            {fileName ? (
-              <>
-                File Selected: <span className="font-bold">{fileName}</span>
-              </>
-            ) : (
-              "Drag and drop a file here or click to upload"
-            )}
-          </p>
-          <Button
-            className="bg-sky-600 hover:bg-sky-700"
-            onClick={handleManualUpload}
-          >
-            Browse Files
-          </Button>
-        </div>
+    >
+      <input {...getInputProps()} />
+      <div className="flex flex-col items-center justify-center gap-4 h-72">
+        <motion.div
+          className="text-sky-600 "
+          animate={{ scale: isDragging ? 1.2 : 1 }}
+        >
+          <IconUpload size={48} />
+        </motion.div>
+        <p className="text-zinc-600">
+          {fileName ? (
+            <>
+              File Selected: <span className="font-bold">{fileName}</span>
+            </>
+          ) : (
+            "Drag and drop a file here or click to upload"
+          )}
+        </p>
+        <Button
+          className="bg-sky-600 hover:bg-sky-700"
+          onClick={handleManualUpload}
+        >
+          Browse Files
+        </Button>
       </div>
-    );
-  };
+    </div>
+  );
+};

@@ -2,7 +2,12 @@
 import React, { Suspense } from "react";
 import { useSearchParams } from "next/navigation"; // useSearchParams hook to read URL parameters
 import { useEffect, useState } from "react";
-import { generateCaption, generateDescriptiveCaption, storeCaption, getCaptions } from "@/api/apiRequest"; // API call to generate captions
+import {
+  generateCaption,
+  generateDescriptiveCaption,
+  storeCaption,
+  getCaptions,
+} from "@/api/apiRequest"; // API call to generate captions
 import { ResultText } from "@/components/resultText";
 import { LoadingSpinner } from "@/components/spinner";
 import { Separator } from "@/components/ui/separator";
@@ -30,12 +35,14 @@ const ResultPage = () => {
             ) || [];
 
           const captionText = await generateDescriptiveCaption(captionArray);
+          console.log("Caption generated successfully:", captionText);
           setCaptions(captionText?.refined_caption);
           setLoading(false);
           if (captionText?.refined_caption) {
             await storeCaption(captionText.refined_caption);
             console.log("Caption stored successfully");
-        } }catch (error) {
+          }
+        } catch (error) {
           console.error("Failed to generate caption:", error);
           setLoading(false);
         }
@@ -70,7 +77,7 @@ const ResultPage = () => {
             <Separator orientation="vertical" className="h-96 bg-zinc-300" />
             <div className="w-full p-2 text-wrap">
               <ResultText captions={captions} />
-              </div>
+            </div>
           </div>
           <Button
             className="bg-zinc-700 hover:bg-zinc-800 font-[family-name:var(--font-libre-baskerville-b)]"
@@ -92,7 +99,9 @@ const ResultPage = () => {
 };
 
 const SuspenseWrapper = () => (
-  <Suspense fallback={<LoadingSpinner size={64} className="text-sky-700 w-full" />}>
+  <Suspense
+    fallback={<LoadingSpinner size={64} className="text-sky-700 w-full" />}
+  >
     <ResultPage />
   </Suspense>
 );
