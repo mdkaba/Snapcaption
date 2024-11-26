@@ -31,10 +31,10 @@ const ResultPage = () => {
 
           const captionText = await generateDescriptiveCaption(captionArray);
           setCaptions(captionText?.refined_caption);
+          setLoading(false);
           if (captionText?.refined_caption) {
             await storeCaption(captionText.refined_caption);
             console.log("Caption stored successfully");
-          setLoading(false);
         } }catch (error) {
           console.error("Failed to generate caption:", error);
           setLoading(false);
