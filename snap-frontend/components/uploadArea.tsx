@@ -46,16 +46,16 @@ export function UploadArea() {
       </div>
       <Card className="bg-transparent flex flex-col w-full items-center border-dashed border border-zinc-400">
         <CardContent className="w-full">
-          <FileUpload onFileUpload={handleFileUpload} />
+          <FileUpload onChange={handleFileUpload} />
         </CardContent>
       </Card>
       <Button
         className="bg-zinc-700 hover:bg-zinc-800 font-[family-name:var(--font-libre-baskerville-b)]"
         size={"lg"}
         onClick={handleGenerateCaptions}
-        >
-          Generate Captions
-        </Button>
-      </div>
-    );
-  }
+      >
+        Generate Captions
+      </Button>
+    </div>
+  );
+}

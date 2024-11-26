@@ -22,11 +22,21 @@ const ResultPage = () => {
 
   const image: string = searchParams.get("img") || "";
 
+  const fetchCaptionHistory = () => {
+    getCaptions()
+      .then((history) => {
+        setCaptionHistory(history?.captions || []);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch caption history:", error);
+      });
+  };
+
   useEffect(() => {
-    const imageURL = searchParams.get("img"); // Access the "img" query parameter
+    const imageURL = searchParams.get("img");
 
     if (imageURL) {
-      const fetchCaptions = async () => {
+      const fetchAndStoreCaptions = async () => {
         try {
           // Generate captions using the image URL
           const captionResult = await generateCaption(imageURL);
@@ -37,34 +47,29 @@ const ResultPage = () => {
 
           const captionText = await generateDescriptiveCaption(captionArray);
           console.log("Caption generated successfully:", captionText);
+
           setCaptions(captionText?.refined_caption);
           setLoading(false);
+
           if (captionText?.refined_caption) {
-            await storeCaption(captionText.refined_caption);
-            console.log("Caption stored successfully");
+            storeCaption(captionText.refined_caption)
+              .then((storeResponse) => {
+                console.log("Caption stored successfully:", storeResponse);
+                fetchCaptionHistory(); // Fetch captions after storing
+              })
+              .catch((error) => {
+                console.error("Failed to store caption:", error);
+              });
           }
         } catch (error) {
-          console.error("Failed to generate caption:", error);
+          console.error("Failed to generate and store caption:", error);
           setLoading(false);
         }
       };
 
-      fetchCaptions();
+      fetchAndStoreCaptions();
     }
   }, [searchParams]);
-
-  useEffect(() => {
-    const fetchCaptionHistory = async () => {
-      try {
-        const history = await getCaptions(); // Fetch all stored captions
-        setCaptionHistory(history?.captions || []);
-      } catch (error) {
-        console.error("Failed to fetch caption history:", error);
-      }
-    };
-
-    fetchCaptionHistory();
-  }, []);
 
   return (
     <div className="dark:bg-zinc-900 bg-zinc-200 relative w-full py-10 px-5">
