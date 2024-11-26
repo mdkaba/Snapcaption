@@ -3,7 +3,8 @@ from fastapi.responses import JSONResponse
 from azure.storage.blob import BlobServiceClient, ContentSettings
 import uuid
 from dotenv import load_dotenv
-import os, requests
+import os
+import requests
 
 load_dotenv()
 
