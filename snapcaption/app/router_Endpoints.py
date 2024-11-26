@@ -145,6 +145,7 @@ async def generate_caption(captions: list[str]):
         )
 
 
+
 @router.post("/store_caption")
 async def store_caption(caption: str = Body(..., embed=True)):
     if not caption or not isinstance(caption, str):

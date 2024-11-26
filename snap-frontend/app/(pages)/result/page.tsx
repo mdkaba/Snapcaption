@@ -2,7 +2,7 @@
 import React, { Suspense } from "react";
 import { useSearchParams } from "next/navigation"; // useSearchParams hook to read URL parameters
 import { useEffect, useState } from "react";
-import { generateCaption, generateDescriptiveCaption } from "@/api/apiRequest"; // API call to generate captions
+import { generateCaption, generateDescriptiveCaption, storeCaption, getCaptions } from "@/api/apiRequest"; // API call to generate captions
 import { ResultText } from "@/components/resultText";
 import { LoadingSpinner } from "@/components/spinner";
 import { Separator } from "@/components/ui/separator";
@@ -31,8 +31,11 @@ const ResultPage = () => {
 
           const captionText = await generateDescriptiveCaption(captionArray);
           setCaptions(captionText?.refined_caption);
+          if (captionText?.refined_caption) {
+            await storeCaption(captionText.refined_caption);
+            console.log("Caption stored successfully");
           setLoading(false);
-        } catch (error) {
+        } }catch (error) {
           console.error("Failed to generate caption:", error);
           setLoading(false);
         }
