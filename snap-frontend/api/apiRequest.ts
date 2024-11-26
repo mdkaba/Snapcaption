@@ -51,3 +51,34 @@ export const generateDescriptiveCaption = async (captions: string[]) => {
     throw error; // Throw error to handle it in the component
   }
 };
+
+export const storeCaption = async (caption: string) => {
+  try {
+    const response = await axios.post(
+      "https://snapcaption-backend2-336921101433.us-central1.run.app/store_caption",
+      caption,
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    return response.data; // Return response data to handle it in the component
+  } catch (error) {
+    console.error("Failed to store caption:", error);
+    throw error; // Throw error to handle it in the component
+  }
+};
+
+export const getCaptions = async () => {
+  try {
+    const response = await axios.get(
+      "https://snapcaption-backend2-336921101433.us-central1.run.app/get_captions",
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    return response.data; // Return response data to handle it in the component
+  } catch (error) {
+    console.error("Failed to retrieve captions:", error);
+    throw error; // Throw error to handle it in the component
+  }
+};
