@@ -1,0 +1,8 @@
+{
+    "name": "snap-frontend",
+    "build": {
+      "command": "npm run build",
+      "outputDirectory": "out"
+    }
+  }
+  
