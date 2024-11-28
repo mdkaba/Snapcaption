@@ -1,0 +1,9 @@
+{
+    "name": "snap-frontend",
+    "build": {
+      "command": "npm run vercel-build",
+      "outputDirectory": ".next"
+    },
+    "framework": "nextjs"
+  }
+  
